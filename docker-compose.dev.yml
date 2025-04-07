@@ -3,8 +3,8 @@ services:
     build: .
     volumes:
       - ./server/data:/app/server/data
-      - server_logs:/app/server/logs
       - ./client:/app/client # Mount the client directory    
+      - server_logs:/app/server/logs      
       - type: tmpfs
         target: /app/tmp
     depends_on:
