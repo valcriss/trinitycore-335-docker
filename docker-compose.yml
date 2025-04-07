@@ -1,6 +1,8 @@
 services:
   trinitycore-335-docker:
     image: danielsilvestre37/trinitycore-335-docker:latest
+    environment:
+      - PUBLIC_IP_ADDRESS=127.0.0.1
     volumes:
       - server_data:/app/server/data
       - server_logs:/app/server/logs

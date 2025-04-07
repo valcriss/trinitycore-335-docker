@@ -23,8 +23,7 @@ This project provides a Dockerized environment for experimenting, developing, an
 ```
 trinitycore-335-docker/
 ├── client/     # Folder where you must place the 3.3.5 WoW client files
-├── docker-compose.yml
-└── .env        # Environment configuration file
+└── docker-compose.yml
 ```
 
 ## 🛠️ Installation Steps
@@ -33,13 +32,12 @@ trinitycore-335-docker/
 mkdir trinitycore-335-docker
 cd trinitycore-335-docker
 curl -o docker-compose.yml https://raw.githubusercontent.com/valcriss/trinitycore-335-docker/refs/heads/main/docker-compose.yml
-curl -o .env https://raw.githubusercontent.com/valcriss/trinitycore-335-docker/refs/heads/main/.env
 mkdir client
 ```
 
 2. **Place your WoW 3.3.5 client files in the `client/` directory**
 
-3. **Edit the .env file according to your needs.**
+3. **Edit in the docker-compose.yml file the environment section according to your needs (public ip address, 127.0.0.1 if your computer hosts the game and the server).**
 
 4. **Start the environment**
 ```bash
