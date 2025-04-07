@@ -141,6 +141,8 @@ Through the web interface, you can send commands to `worldserver`, such as creat
 .account set addon myuser 2
 ```
 
+More informations here : [TrinityCore GM Commands](https://trinitycore.info/en/how-to/gm-commands)
+
 ## 📌 Services Defined in `docker-compose.yml`
 - **`trinitycore-335-docker`**: the main container running all automation scripts, TrinityCore binaries, and the web interface
 - **`database`**: MySQL database server used by TrinityCore
