@@ -28,7 +28,7 @@ trinitycore-335-docker/
 ```
 
 ## 🛠️ Installation Steps
-1. **Prepare directories and etreive the require files**
+1. **Prepare directories and retreive the require files**
 ```bash
 mkdir trinitycore-335-docker
 cd trinitycore-335-docker
