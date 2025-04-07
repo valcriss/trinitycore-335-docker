@@ -1,6 +1,6 @@
 services:
-  trinitycore:
-    build: .
+  trinitycore-335-docker:
+    image: danielsilvestre37/trinitycore-335-docker:latest
     volumes:
       - server_data:/app/server/data
       - server_logs:/app/server/logs

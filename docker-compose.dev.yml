@@ -1,6 +1,8 @@
 services:
   trinitycore:
     build: .
+    environment:
+      - PUBLIC_IP_ADDRESS=127.0.0.1
     volumes:
       - ./server/data:/app/server/data
       - ./client:/app/client # Mount the client directory    
