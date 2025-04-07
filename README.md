@@ -31,6 +31,7 @@ trinitycore-335-docker/
 1. **Prepare directories and etreive the require files**
 ```bash
 mkdir trinitycore-335-docker
+cd trinitycore-335-docker
 curl -o docker-compose.yml https://raw.githubusercontent.com/valcriss/trinitycore-335-docker/refs/heads/main/docker-compose.yml
 curl -o .env https://raw.githubusercontent.com/valcriss/trinitycore-335-docker/refs/heads/main/.env
 mkdir client
