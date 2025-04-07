@@ -2,8 +2,9 @@ name: Build and Push Docker image
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - '*'
+      
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -27,4 +28,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: danielsilvestre37/trinitycore-335-docker:latest
+          tags: |
+            danielsilvestre37/trinitycore-335-docker:latest
+            danielsilvestre37/trinitycore-335-docker:${{ github.ref_name }}
