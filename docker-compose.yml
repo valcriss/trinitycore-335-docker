@@ -14,14 +14,14 @@ services:
       - "8085:8085" # World server
       - "3724:3724" # Auth server
       - "3000:3000" # Web server
-    deploy:
-      resources:
-        limits:
-          cpus: "4.0"
-          memory: "8g"
-        reservations:
-          cpus: "4.0"
-          memory: "8g"
+    #deploy:
+    #  resources:
+    #    limits:
+    #      cpus: "4.0"
+    #      memory: "8g"
+    #    reservations:
+    #      cpus: "4.0"
+    #      memory: "8g"
   database:
     image: mysql:8.4.4
     environment:
