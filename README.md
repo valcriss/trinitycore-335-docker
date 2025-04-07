@@ -1,4 +1,5 @@
 # TrinityCore 3.3.5 Docker Environment
+![Action State](https://github.com/valcriss/trinitycore-335-docker/actions/workflows/docker-build-push.yml/badge.svg)  ![Docker Pulls](https://img.shields.io/docker/pulls/danielsilvestre37/trinitycore-335-docker)
 
 This project provides a Dockerized environment for experimenting, developing, and researching with the [TrinityCore 3.3.5](https://www.trinitycore.info/) World of Warcraft server emulator. It is intended for educational and non-commercial use only.
 
@@ -130,6 +131,15 @@ Through the web interface, you can send commands to `worldserver`, such as creat
 - A compatible 3.3.5 WoW client is required, but **not provided**.
 - All databases (`auth`, `characters`, `world`) are automatically created and populated at first run.
 - Account creation is handled via the web UI or TrinityCore commands.
+
+⚠️ This project is not affiliated with or endorsed by Blizzard Entertainment or TrinityCore. Use of the trinitycore emulator is intended strictly for educational and non-commercial purposes.
+
+### How to create an account on TrinityCore worldserver (via the web interface)
+```
+.account create myuser mypass
+.account set gmlevel myuser 3 -1
+.account set addon myuser 2
+```
 
 ## 📌 Services Defined in `docker-compose.yml`
 - **`trinitycore-335-docker`**: the main container running all automation scripts, TrinityCore binaries, and the web interface
