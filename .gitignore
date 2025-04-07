@@ -1,0 +1,12 @@
+db_data/
+backend/node_modules/
+
+client/*
+client/**/*
+!client/.gitkeep
+
+server/data/*
+!server/data/.gitkeep
+
+server/logs/*
+!server/logs/.gitkeep

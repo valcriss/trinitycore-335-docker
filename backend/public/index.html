@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>TrinityCore 335 Docker 1.0.0</title>
+</head>
+
+<body class="bg-black text-green-500 font-mono p-5 m-0">
+  <div class="mx-auto max-w-7xl">
+    <div class="bg-[#111] border border-gray-800 p-1 mb-1 flex flex-row">
+      <div class="basis-1/4">
+        <div class="mx-2" id="authserver-offline" style="display: block;">
+          <img src="./img/red-circle.svg" alt="Auth Server Offline" class="w-4 h-4 inline-block mr-2"><span class="text-sm text-red-500">Auth Server Offline</span>
+        </div>
+        <div class="mx-2" id="authserver-online" style="display: none;">
+          <img src="./img/green-circle.svg" alt="Auth Server Offline" class="w-4 h-4 inline-block mr-2"><span class="text-sm text-green-500">Auth Server Online</span>
+        </div>
+      </div>
+      <div class="basis-1/4">
+        <div class="mx-2" id="worldserver-offline" style="display: block;">
+          <img src="./img/red-circle.svg" alt="World Server Offline" class="w-4 h-4 inline-block mr-2"><span class="text-sm text-red-500">World Server Offline</span>
+        </div>
+        <div class="mx-2" id="worldserver-online" style="display: none;">
+          <img src="./img/green-circle.svg" alt="World Server Offline" class="w-4 h-4 inline-block mr-2"><span class="text-sm text-green-500">World Server Online</span>
+        </div>
+      </div>
+    </div>
+    <div id="terminal"
+      class="p-2.5 h-[80vh] mb-1 text-sm overflow-y-auto whitespace-pre-wrap bg-[#111] border border-gray-800 text-[#0f0]">
+    </div>
+    <input id="input" type="text" placeholder="Send a command..."
+      class="text-sm border border-gray-800 w-full p-2.5 bg-[#111] text-[#0f0] outline-none">
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const terminal = document.getElementById('terminal');
+    const input = document.getElementById('input');
+    const authserverOffline = document.getElementById('authserver-offline');
+    const authserverOnline = document.getElementById('authserver-online');
+    const worldserverOffline = document.getElementById('worldserver-offline');
+    const worldserverOnline = document.getElementById('worldserver-online');
+
+    socket.on('worldserver_state', (data) => {
+      terminal.textContent = data.output + '\n';
+      worldserverOffline.style.display = data.running ? 'none' : 'block';
+      worldserverOnline.style.display = data.running ? 'block' : 'none';
+      terminal.scrollTop = terminal.scrollHeight;
+    });
+
+    socket.on('authserver_state', (data) => {
+      authserverOffline.style.display = data.running ? 'none' : 'block';
+      authserverOnline.style.display = data.running ? 'block' : 'none';
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        socket.emit('worldserver_input', input.value);
+        input.value = '';
+      }
+    });
+  </script>
+</body>
+
+</html>
