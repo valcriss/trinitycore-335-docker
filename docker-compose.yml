@@ -4,6 +4,8 @@ services:
     environment:
       - PUBLIC_IP_ADDRESS=127.0.0.1
       # - SERVER_NAME=TrinityCore Server
+      # - ACCESS_USERNAME=admin
+      # - ACCESS_PASSWORD=admin
     volumes:
       - server_data:/app/server/data
       - server_logs:/app/server/logs

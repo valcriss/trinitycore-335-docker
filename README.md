@@ -127,6 +127,17 @@ Through the web interface, you can send commands to `worldserver`, such as creat
 
 > ⚠️ Don’t forget to edit your **realmlist.wtf** file to point to the container’s IP address.
 
+## 🔒 User Authentication
+
+The web interface now includes a secure authentication mechanism to restrict access. Users must log in with a valid username and password to interact with the server.
+
+### How It Works:
+- **Login Page**: Upon accessing the web interface, users are prompted to log in if authentication is enabled.
+- **Environment Configuration**: Set the `ACCESS_USERNAME` and `ACCESS_PASSWORD` environment variables in the `docker-compose.yml` file to define the credentials.
+- **Session Management**: Once authenticated, the session remains active until the browser is closed.
+
+> ⚠️ Ensure you configure strong credentials to secure your server.
+
 ## ❓ Notes
 - A compatible 3.3.5 WoW client is required, but **not provided**.
 - All databases (`auth`, `characters`, `world`) are automatically created and populated at first run.

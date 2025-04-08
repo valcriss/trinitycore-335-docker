@@ -3,6 +3,8 @@ services:
     build: .
     environment:
       - PUBLIC_IP_ADDRESS=127.0.0.1
+      # - ACCESS_USERNAME=admin
+      # - ACCESS_PASSWORD=admin
     volumes:
       - ./server/data:/app/server/data
       - ./client:/app/client # Mount the client directory    

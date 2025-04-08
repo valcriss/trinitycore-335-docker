@@ -194,6 +194,15 @@ class AppConfiguration {
         return this.worldServerConfigFile;
     }
 
+    // Authentication settings
+    getAccessUsername() {
+        return process.env.ACCESS_USERNAME || null;
+    }
+
+    getAccessPassword() {
+        return process.env.ACCESS_PASSWORD || null;
+    }
+
     getDatabaseConfiguration() {
         return {
             root: {
