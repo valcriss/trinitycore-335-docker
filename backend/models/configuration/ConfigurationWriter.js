@@ -32,8 +32,8 @@ class ConfigurationWriter {
     }
 
     // Écrire la configuration pour AuthServer
-    writeAuthServerConfiguration() {
-        const inputFilePath = path.resolve(__dirname, '../../resources/authserver.conf.dist');
+    writeAuthServerConfiguration(serverMode) {
+        const inputFilePath = serverMode === "bots" ? path.resolve(__dirname, '../../resources/authserver.bots.conf.dist') : path.resolve(__dirname, '../../resources/authserver.conf.dist');
         const outputFilePath = this.configuration.getAuthServerConfigFile();
 
         const replacements = {
@@ -49,8 +49,8 @@ class ConfigurationWriter {
     }
 
     // Écrire la configuration pour WorldServer
-    writeWorldServerConfiguration() {
-        const inputFilePath = path.resolve(__dirname, '../../resources/worldserver.conf.dist');
+    writeWorldServerConfiguration(serverMode) {
+        const inputFilePath = serverMode === "bots" ? path.resolve(__dirname, '../../resources/worldserver.bots.conf.dist') : path.resolve(__dirname, '../../resources/worldserver.conf.dist');
         const outputFilePath = this.configuration.getWorldServerConfigFile();
 
         const replacements = {

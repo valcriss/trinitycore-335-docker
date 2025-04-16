@@ -14,8 +14,9 @@ const io = new Server(server);
 const configuration = new AppConfiguration();
 const consoleHelper = new ConsoleHelper();
 const applicationInitializer = new ApplicationInitializer(configuration, consoleHelper);
-const authServerRunner = new CommandRunner(configuration.getAuthServerBinary(), '/app/server/bin');
-const worldServerRunner = new CommandRunner(configuration.getWorldServerBinary(), '/app/server/bin');
+const authServerRunner = new CommandRunner(configuration.getAuthServerBinary(), ["--config", "/app/server/etc/authserver.conf"], '/app/server/bin');
+const worldServerRunner = new CommandRunner(configuration.getWorldServerBinary(), ["--config", "/app/server/etc/worldserver.conf"], '/app/server/bin');
+const args = process.argv.slice(2);
 
 app.use(express.json()); // Middleware to parse JSON request bodies
 
@@ -42,87 +43,97 @@ app.get('/api/needAuthentication', (req, res) => {
 });
 
 (async () => {
+    let serverMode = 'regular'
+    if (args.includes('--bots')) {
+        serverMode = 'bots'
+    }
+    consoleHelper.writeBox('TrinityCore 335 Docker 1.0.0 [' + serverMode + ']');
 
-        consoleHelper.writeBox('TrinityCore 335 Docker 1.0.0');
+    if (!await applicationInitializer.checkDatabaseConnection()) {
+        return;
+    }
 
-        if (!await applicationInitializer.checkDatabaseConnection()) {
+    if (!await applicationInitializer.checkDatabasesStructure()) {
+        return;
+    }
+
+    if (!await applicationInitializer.checkDatabasesInitialData()) {
+        return;
+    }
+
+    if (!applicationInitializer.updateAuthServerConfiguration(serverMode)) {
+        return;
+    }
+
+    if (!applicationInitializer.updateWorldServerConfiguration(serverMode)) {
+        return;
+    }
+
+    if (!await applicationInitializer.updateApplicationDatabase()) {
+        return;
+    }
+
+    if (serverMode === 'bots') {
+        if (!await applicationInitializer.updateApplicationDatabaseWithBots()) {
             return;
         }
+        await applicationInitializer.updateBotsBinaries();
+    }
 
-        if (!await applicationInitializer.checkDatabasesStructure()) {
-            return;
-        }
+    if (!await applicationInitializer.updateRealmInformations()) {
+        return;
+    }
 
-        if (!await applicationInitializer.checkDatabasesInitialData()) {
-            return;
-        }
+    if (!await applicationInitializer.checkClientMapData()) {
+        return;
+    }
 
-        if (!applicationInitializer.updateAuthServerConfiguration()) {
-            return;
-        }
+    consoleHelper.writeBox('Application Startup Complete');
 
-        if (!applicationInitializer.updateWorldServerConfiguration()) {
-            return;
-        }
+    app.use(express.static(path.join(__dirname, 'public')));
 
-        if (!await applicationInitializer.updateApplicationDatabase()) {
-            return;
-        }
+    app.get('/', (req, res) => {
+        res.sendFile(__dirname + '/public/index.html');
+    });
 
-        if (!await applicationInitializer.updateRealmInformations()) {
-            return;
-        }
-
-        if (!await applicationInitializer.checkClientMapData()) {
-            return;
-        }
-
-        consoleHelper.writeBox('Application Startup Complete');
-
-        app.use(express.static(path.join(__dirname, 'public')));
-
-        app.get('/', (req, res) => {
-            res.sendFile(__dirname + '/public/index.html');
+    io.on('connection', (socket) => {
+        socket.on('worldserver_input', (input) => {
+            worldServerRunner.send(input);
+        });
+        socket.on('authserver_input', (input) => {
+            authServerRunner.send(input);
         });
 
-        io.on('connection', (socket) => {
-            socket.on('worldserver_input', (input) => {
-                worldServerRunner.send(input);
-            });
-            socket.on('authserver_input', (input) => {
-                authServerRunner.send(input);
-            });
-
-            socket.emit('authserver_state', {
-                output: authServerRunner.getOutput(),
-                running: authServerRunner.isRunning(),
-                code: authServerRunner.getCode()
-            });
-            socket.emit('worldserver_state', {
-                output: worldServerRunner.getOutput(),
-                running: worldServerRunner.isRunning(),
-                code: worldServerRunner.getCode()
-            });
+        socket.emit('authserver_state', {
+            output: authServerRunner.getOutput(),
+            running: authServerRunner.isRunning(),
+            code: authServerRunner.getCode()
         });
-
-        authServerRunner.start(() => {
-            io.emit('authserver_state', {
-                output: authServerRunner.getOutput(),
-                running: authServerRunner.isRunning(),
-                code: authServerRunner.getCode()
-            });
+        socket.emit('worldserver_state', {
+            output: worldServerRunner.getOutput(),
+            running: worldServerRunner.isRunning(),
+            code: worldServerRunner.getCode()
         });
+    });
 
-        worldServerRunner.start(() => {
-            io.emit('worldserver_state', {
-                output: worldServerRunner.getOutput(),
-                running: worldServerRunner.isRunning(),
-                code: worldServerRunner.getCode()
-            });
+    authServerRunner.start(() => {
+        io.emit('authserver_state', {
+            output: authServerRunner.getOutput(),
+            running: authServerRunner.isRunning(),
+            code: authServerRunner.getCode()
         });
+    });
 
-        server.listen(3000, () => {
-            consoleHelper.writeBox('Web interface listening on http://0.0.0.0:3000');
+    worldServerRunner.start(() => {
+        io.emit('worldserver_state', {
+            output: worldServerRunner.getOutput(),
+            running: worldServerRunner.isRunning(),
+            code: worldServerRunner.getCode()
         });
-    })();
+    });
+
+    server.listen(3000, () => {
+        consoleHelper.writeBox('Web interface listening on http://0.0.0.0:3000');
+    });
+})();
 

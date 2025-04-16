@@ -1,6 +1,7 @@
 services:
   trinitycore-335-docker:
     image: danielsilvestre37/trinitycore-335-docker:latest
+    #command: ["node", "/app/backend/index.js", "--bots"]
     environment:
       - PUBLIC_IP_ADDRESS=127.0.0.1
       # - SERVER_NAME=TrinityCore Server

@@ -2,8 +2,9 @@ const CommandExecuter = require('./CommandExecuter');
 
 class CommandRunner {
 
-    constructor(binaryPath, binaryCwd) {
+    constructor(binaryPath, params, binaryCwd) {
         this.binaryCwd = binaryCwd;
+        this.params = params;
         this.binaryPath = binaryPath;
         this.commandExecuter = new CommandExecuter();
         this.buffer = '';
@@ -12,7 +13,7 @@ class CommandRunner {
     }
 
     start(onUpdate = null) {
-        this.commandExecuter.execute(this.binaryPath, [], this.binaryCwd, (stdout) => {
+        this.commandExecuter.execute(this.binaryPath, this.params, this.binaryCwd, (stdout) => {
             this.buffer += stdout.toString();
             this.truncateBuffer();
             if (onUpdate) {

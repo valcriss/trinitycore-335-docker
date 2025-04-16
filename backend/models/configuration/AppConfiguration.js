@@ -6,6 +6,8 @@ class AppConfiguration {
         // Binary paths
         this.authServerBinary = '/app/server/bin/authserver';
         this.worldServerBinary = '/app/server/bin/worldserver';
+        this.botsAuthServerBinary = '/app/server/bots/bin/authserver';
+        this.botsWorldServerBinary = '/app/server/bots/bin/worldserver';
         this.mapExtractorBinary = '/app/server/bin/mapextractor';
         this.mmapsGeneratorBinary = '/app/server/bin/mmaps_generator';
         this.vmap4AssemblerBinary = '/app/server/bin/vmap4assembler';
@@ -49,6 +51,13 @@ class AppConfiguration {
             this.authServerBinary = process.env.AUTHSERVER_BINARY;
         }
         return this.authServerBinary;
+    }
+
+    getBotsAuthServerBinary() {
+        return this.botsAuthServerBinary
+    }
+    getBotsWorldServerBinary() {
+        return this.botsWorldServerBinary
     }
 
     getWorldServerBinary() {

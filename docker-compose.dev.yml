@@ -1,6 +1,7 @@
 services:
   trinitycore:
     build: .
+    #command: ["node", "/app/backend/index.js", "--bots"]
     environment:
       - PUBLIC_IP_ADDRESS=127.0.0.1
       # - ACCESS_USERNAME=admin

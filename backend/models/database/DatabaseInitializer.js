@@ -53,7 +53,7 @@ class DatabaseInitializer {
 
             const extractPath = '/app/server/bin/';
 
-            let result = await this.commandExecuter.execute(`/usr/bin/7z`, [`x`,`/app/server/bin/${filename}`,`-o${extractPath}`, `-y`], '/app/server/bin');
+            let result = await this.commandExecuter.execute(`/usr/bin/7z`, [`x`, `/app/server/bin/${filename}`, `-o${extractPath}`, `-y`], '/app/server/bin');
             if (!result) {
                 return false;
             }
@@ -64,6 +64,88 @@ class DatabaseInitializer {
         } catch (error) {
             return false;
         }
+    }
+
+    async initializeBotsData() {
+        try {
+            // Update world database
+            const worldInitialScripts = [
+                "/app/TrinityCoreBots/sql/Bots/1_world_bot_appearance.sql",
+                "/app/TrinityCoreBots/sql/Bots/2_world_bot_extras.sql",
+                "/app/TrinityCoreBots/sql/Bots/3_world_bots.sql",
+                "/app/TrinityCoreBots/sql/Bots/4_world_generate_bot_equips.sql",
+                "/app/TrinityCoreBots/sql/Bots/5_world_botgiver.sql",
+            ];
+
+            // Process world scripts
+            for (const script of worldInitialScripts) {
+                try {
+                    await this.processSqlFileInBashCall(script, 'world');
+                }
+                catch (error) {
+                    console.error(`Error processing ${script}:`, error);
+                }
+            }
+
+            // Process characters scripts
+            const charactersInitialScripts = [
+                "/app/TrinityCoreBots/sql/Bots/characters_bots.sql"
+            ];
+
+            for (const script of charactersInitialScripts) {
+                await this.processSqlFileInBashCall(script, 'characters');
+            }
+
+            // Process ALL_*.sql files
+            const inputFiles = {
+                'auth': '/app/TrinityCoreBots/sql/Bots/ALL_auth.sql',
+                'characters': '/app/TrinityCoreBots/sql/Bots/ALL_characters.sql',
+                'world': '/app/TrinityCoreBots/sql/Bots/ALL_world.sql',
+            };
+
+            for (const [db, filePath] of Object.entries(inputFiles)) {
+                await this.processSqlFileInBashCall(filePath, db);
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error initializing bots data:', error);
+            return false;
+        }
+    }
+
+    async processSqlFileInBashCall(filePath, database) {
+        try {
+            let content = fs.readFileSync(filePath, 'utf8');
+            const tempFilePath = '/tmp/temp_queries.sql';
+            fs.writeFileSync(tempFilePath, content);
+            const dbConfig = this.database.config[database];
+            const command = `mysql -u${dbConfig.user} -p${dbConfig.password} -h${dbConfig.host} ${dbConfig.database} < ${tempFilePath}`;
+            await this.executeBashCommand(command);
+            fs.unlinkSync(tempFilePath);
+            return true;
+        } catch (error) {
+            console.error('Error processing SQL file in bash call:', error);
+            return false;
+        }
+    }
+
+    async executeBashCommand(command) {
+        return new Promise((resolve, reject) => {
+            exec(command, (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`Erreur d'exécution: ${error}`);
+                    reject(error);
+                    return;
+                }
+                if (stderr) {
+                    if (!stderr.includes('Using a password on the command line interface can be insecure.')) {
+                        console.error(`stderr: ${stderr}`);
+                    }
+                }
+                resolve(stdout);
+            });
+        });
     }
 
     async fetchTrinityCoreReleases() {

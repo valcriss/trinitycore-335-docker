@@ -30,10 +30,24 @@ class Database {
         }
     }
 
+    async containsBotsData() {
+        const connection = await mysql.createConnection(this.config['root']);
+        try {
+            const authDatabaseName = this.config['auth'].database;
+            const sql = 'SELECT COUNT(*) AS count FROM '+authDatabaseName+'.rbac_permissions WHERE id = ? AND name = ?';
+            const params = ['70001', 'Command: npcbot'];
+            const [rows] = await connection.execute(sql, params);
+            return rows[0].count > 0;
+        } finally {
+            await connection.end();
+        }
+    }
+
     async query(database, sql, params) {
         const connection = await mysql.createConnection(this.config[database]);
         try {
-            const [rows] = await connection.execute(sql, params);
+            // Utiliser connection.query() au lieu de connection.execute() pour les opérations DDL
+            const [rows] = await connection.query(sql, params);
             return rows;
         } finally {
             await connection.end();

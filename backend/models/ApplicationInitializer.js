@@ -3,6 +3,8 @@ const Database = require("./database/Database");
 const ConfigurationWriter = require("./configuration/ConfigurationWriter");
 const DatabaseInitializer = require("./database/DatabaseInitializer");
 const MapInitializer = require("./map/MapInitializer");
+const fs = require('fs');
+const path = require('path');
 
 class ApplicationInitializer {
     constructor(configuration, consoleHelper) {
@@ -66,9 +68,9 @@ class ApplicationInitializer {
         }
     }
 
-    updateAuthServerConfiguration() {
+    updateAuthServerConfiguration(serverMode) {
         this.consoleHelper.beginBox('Updating auth server configuration files');
-        if (!this.configurationWriter.writeAuthServerConfiguration()) {
+        if (!this.configurationWriter.writeAuthServerConfiguration(serverMode)) {
             this.consoleHelper.endBox('Writing auth server configuration failed. Exiting');
             return false;
         }
@@ -78,9 +80,9 @@ class ApplicationInitializer {
         }
     }
 
-    updateWorldServerConfiguration() {
+    updateWorldServerConfiguration(serverMode) {
         this.consoleHelper.beginBox('Updating world server configuration files');
-        if (!this.configurationWriter.writeWorldServerConfiguration()) {
+        if (!this.configurationWriter.writeWorldServerConfiguration(serverMode)) {
             this.consoleHelper.endBox('Writing world server configuration failed. Exiting');
             return false;
         }
@@ -100,6 +102,61 @@ class ApplicationInitializer {
         else {
             this.consoleHelper.endBox('Application database update successful.');
             return true;
+        }
+    }
+
+    async updateApplicationDatabaseWithBots()
+    {
+        this.consoleHelper.beginBox('Checking bots databases data');
+        if (!await this.database.containsBotsData()) {
+            this.consoleHelper.writeBoxLine('Bots databases are not present: checking initial data.');
+            if (!await this.databaseInitializer.initializeBotsData()) {
+                this.consoleHelper.endBox('Bots databases initialization failed. Exiting');
+                return false;
+            }
+            else {
+                this.consoleHelper.endBox('Bots databases initialization successful.');
+                return true;
+            }
+        }
+        else {
+            this.consoleHelper.endBox('Bots databases are present.');
+            return true;
+        }
+    }
+
+    async updateBotsBinaries()
+    {
+        // update authserver
+        const botsAuthServer = this.configuration.getBotsAuthServerBinary();
+        const botsWorldServer = this.configuration.getBotsWorldServerBinary();
+        const authServer = this.configuration.getAuthServerBinary();
+        const worldServer = this.configuration.getWorldServerBinary();
+
+        // cp bots authserver to authserver
+        this.consoleHelper.beginBox('Updating bots binaries');
+
+        try {
+            // Ensure target directory exists
+            const authServerDir = path.dirname(authServer);
+            if (!fs.existsSync(authServerDir)) {
+                fs.mkdirSync(authServerDir, { recursive: true });
+            }
+            
+            // Copy bots auth server to auth server
+            fs.copyFileSync(botsAuthServer, authServer);
+            this.consoleHelper.writeBoxLine(`Copied ${botsAuthServer} to ${authServer}`);
+            
+            // Copy bots world server to world server
+            fs.copyFileSync(botsWorldServer, worldServer);
+            this.consoleHelper.writeBoxLine(`Copied ${botsWorldServer} to ${worldServer}`);
+            
+            this.consoleHelper.endBox('Bots binaries update successful.');
+            return true;
+        } catch (error) {
+            this.consoleHelper.writeBoxLine(`Error updating bots binaries: ${error.message}`);
+            this.consoleHelper.endBox('Bots binaries update failed. Exiting');
+            return false;
         }
     }
 
