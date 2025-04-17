@@ -158,6 +158,37 @@ More informations here : [TrinityCore GM Commands](https://trinitycore.info/en/h
 - **`trinitycore-335-docker`**: the main container running all automation scripts, TrinityCore binaries, and the web interface
 - **`database`**: MySQL database server used by TrinityCore
 
+## 🤖 Using TrinityCore with NPCBots
+
+This project supports using a custom version of TrinityCore that includes NPCBots functionality (https://github.com/trickerer/TrinityCore-3.3.5-with-NPCBots.git). NPCBots adds the ability to recruit and manage NPC companions that can join your party, follow you, and assist in combat.
+
+### Features of NPCBots
+- Recruit NPC companions to fight alongside your character
+- Configure bot behavior and equipment
+- Create balanced parties with tanks, healers, and DPS
+- Enhance solo gameplay with AI companions
+
+### How to Enable NPCBots
+To use the NPCBots version instead of standard TrinityCore:
+
+1. Open your `docker-compose.yml` file
+2. Find the following commented line in the configuration:
+   ```yaml
+   #command: ["node", "/app/backend/index.js", "--bots"]
+   ```
+3. Uncomment this line by removing the `#` character:
+   ```yaml
+   command: ["node", "/app/backend/index.js", "--bots"]
+   ```
+4. Save the file and start your container:
+   ```bash
+   docker-compose up -d
+   ```
+
+The system will automatically use the NPCBots version of TrinityCore when initializing the environment.
+
+> Note: The NPCBots version includes all standard TrinityCore functionality plus the additional bot features.
+
 ## 💡 Troubleshooting & Tips
 - Ensure the WoW client version is **exactly 3.3.5a (12340)** for extraction to succeed.
 - If the client files are not correctly placed in `client/`, extraction and setup will fail.
